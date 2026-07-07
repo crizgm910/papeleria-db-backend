@@ -15,6 +15,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<DetalleVenta> DetallesVenta { get; set; } = null!;
     public DbSet<Caja> Cajas { get; set; } = null!;
     public DbSet<CorteCaja> CortesCaja { get; set; } = null!;
+    public DbSet<Usuario> Usuarios { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
