@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="PapeleriaDB.Api/PapeleriaDB.Api.csproj" />
+  <Project Path="PapeleriaDB.Application/PapeleriaDB.Application.csproj" />
+  <Project Path="PapeleriaDB.Domain/PapeleriaDB.Domain.csproj" />
+  <Project Path="PapeleriaDB.Infrastructure/PapeleriaDB.Infrastructure.csproj" />
+  <Project Path="PapeleriaDB.Persistence/PapeleriaDB.Persistence.csproj" />
+  <Project Path="PapeleriaDB.Shared/PapeleriaDB.Shared.csproj" />
+</Solution>

@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PapeleriaDB.Application\PapeleriaDB.Application.csproj" />
+    <ProjectReference Include="..\PapeleriaDB.Infrastructure\PapeleriaDB.Infrastructure.csproj" />
+    <ProjectReference Include="..\PapeleriaDB.Persistence\PapeleriaDB.Persistence.csproj" />
+    <ProjectReference Include="..\PapeleriaDB.Shared\PapeleriaDB.Shared.csproj" />
+  </ItemGroup>
+
+</Project>
