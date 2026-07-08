@@ -20,13 +20,29 @@ public class VentasController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> RegistrarVenta([FromBody] CrearVentaDto dto)
     {
-        var response = await _ventaService.RegistrarVentaAsync(dto);
-        
-        if (!response.Exito)
+        var respuesta = await _ventaService.RegistrarVentaAsync(dto);
+        if (!respuesta.Exito)
         {
-            return BadRequest(response.Mensaje);
+            return BadRequest(respuesta);
         }
 
-        return Ok(response);
+        return Ok(respuesta);
+    }
+
+    [HttpPost("{id}/devolucion")]
+    public async Task<IActionResult> RegistrarDevolucion(int id, [FromBody] List<DevolucionItemDto> devoluciones)
+    {
+        if (devoluciones == null || !devoluciones.Any())
+        {
+            return BadRequest("Debe especificar al menos un artículo para devolver.");
+        }
+
+        var respuesta = await _ventaService.DevolverArticulosAsync(id, devoluciones);
+        if (!respuesta.Exito)
+        {
+            return BadRequest(respuesta);
+        }
+
+        return Ok(respuesta);
     }
 }

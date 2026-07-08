@@ -1,0 +1,10 @@
+namespace PapeleriaDB.Domain.Entities;
+
+public class Servicio
+{
+    public int Id { get; set; }
+    public string CodigoInterno { get; set; } = string.Empty;
+    public string Nombre { get; set; } = string.Empty;
+    public decimal PrecioBase { get; set; }
+    public string? Descripcion { get; set; }
+}

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PapeleriaDB.Persistence.Contexts;
 
@@ -10,9 +11,11 @@ using PapeleriaDB.Persistence.Contexts;
 namespace PapeleriaDB.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260708154514_AddMovimientosAndServicios")]
+    partial class AddMovimientosAndServicios
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.9");
@@ -218,7 +221,6 @@ namespace PapeleriaDB.Persistence.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<int>("StockActual")
-                        .IsConcurrencyToken()
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("StockMinimo")

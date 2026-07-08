@@ -12,6 +12,7 @@ public class UnitOfWork : IUnitOfWork
     public IVentaRepository Ventas { get; private set; }
     public ICajaRepository Cajas { get; private set; }
     public IUsuarioRepository Usuarios { get; private set; }
+    public IServicioRepository Servicios { get; private set; }
 
     public UnitOfWork(ApplicationDbContext context)
     {
@@ -20,6 +21,7 @@ public class UnitOfWork : IUnitOfWork
         Ventas = new VentaRepository(_context);
         Cajas = new CajaRepository(_context);
         Usuarios = new UsuarioRepository(_context);
+        Servicios = new ServicioRepository(_context);
     }
 
     public async Task<int> CompleteAsync()

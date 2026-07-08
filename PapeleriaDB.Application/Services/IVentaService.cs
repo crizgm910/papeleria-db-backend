@@ -5,4 +5,5 @@ namespace PapeleriaDB.Application.Services;
 public interface IVentaService
 {
     Task<VentaResponseDto> RegistrarVentaAsync(CrearVentaDto dto);
+    Task<DevolucionResponseDto> DevolverArticulosAsync(int ventaId, List<DevolucionItemDto> devoluciones);
 }

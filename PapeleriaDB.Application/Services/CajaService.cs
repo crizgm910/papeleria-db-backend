@@ -52,7 +52,10 @@ public class CajaService : ICajaService
         var ventasEfectivo = caja.Ventas.Where(v => v.MetodoPagoPrincipal == "Efectivo").Sum(v => v.Total);
         var ventasTarjeta = caja.Ventas.Where(v => v.MetodoPagoPrincipal == "Tarjeta").Sum(v => v.Total);
 
-        corteAbierto.EfectivoEsperado = corteAbierto.MontoInicial + ventasEfectivo;
+        var movimientosIngreso = caja.Movimientos.Where(m => m.Tipo == "Ingreso").Sum(m => m.Monto);
+        var movimientosEgreso = caja.Movimientos.Where(m => m.Tipo == "Egreso").Sum(m => m.Monto);
+
+        corteAbierto.EfectivoEsperado = corteAbierto.MontoInicial + ventasEfectivo + movimientosIngreso - movimientosEgreso;
         corteAbierto.EfectivoContado = dto.EfectivoContado;
         corteAbierto.Diferencia = corteAbierto.EfectivoContado - corteAbierto.EfectivoEsperado;
         

@@ -6,6 +6,7 @@ public interface IUnitOfWork : IDisposable
     IVentaRepository Ventas { get; }
     ICajaRepository Cajas { get; }
     IUsuarioRepository Usuarios { get; }
+    IServicioRepository Servicios { get; }
     
     Task<int> CompleteAsync();
 }

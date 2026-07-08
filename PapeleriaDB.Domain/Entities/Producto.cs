@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace PapeleriaDB.Domain.Entities;
 
 public class Producto
@@ -11,6 +13,7 @@ public class Producto
     public Categoria? Categoria { get; set; }
     public decimal PrecioVenta { get; set; }
     public decimal CostoCompra { get; set; }
+    [ConcurrencyCheck]
     public int StockActual { get; set; }
     public int StockMinimo { get; set; }
     public bool Estado { get; set; } = true;

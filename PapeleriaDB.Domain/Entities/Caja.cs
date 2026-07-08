@@ -8,4 +8,5 @@ public class Caja
     
     public ICollection<Venta> Ventas { get; set; } = new List<Venta>();
     public ICollection<CorteCaja> Cortes { get; set; } = new List<CorteCaja>();
+    public ICollection<MovimientoCaja> Movimientos { get; set; } = new List<MovimientoCaja>();
 }

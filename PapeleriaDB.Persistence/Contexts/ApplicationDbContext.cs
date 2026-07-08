@@ -16,6 +16,8 @@ public class ApplicationDbContext : DbContext
     public DbSet<Caja> Cajas { get; set; } = null!;
     public DbSet<CorteCaja> CortesCaja { get; set; } = null!;
     public DbSet<Usuario> Usuarios { get; set; } = null!;
+    public DbSet<MovimientoCaja> MovimientosCaja { get; set; } = null!;
+    public DbSet<Servicio> Servicios { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -54,6 +56,14 @@ public class ApplicationDbContext : DbContext
             
         modelBuilder.Entity<DetalleVenta>()
             .Property(d => d.Subtotal)
+            .HasPrecision(18, 2);
+
+        modelBuilder.Entity<MovimientoCaja>()
+            .Property(m => m.Monto)
+            .HasPrecision(18, 2);
+
+        modelBuilder.Entity<Servicio>()
+            .Property(s => s.PrecioBase)
             .HasPrecision(18, 2);
     }
 }
