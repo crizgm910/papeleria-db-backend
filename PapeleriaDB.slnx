@@ -5,4 +5,5 @@
   <Project Path="PapeleriaDB.Infrastructure/PapeleriaDB.Infrastructure.csproj" />
   <Project Path="PapeleriaDB.Persistence/PapeleriaDB.Persistence.csproj" />
   <Project Path="PapeleriaDB.Shared/PapeleriaDB.Shared.csproj" />
+  <Project Path="PapeleriaDB.Tests/PapeleriaDB.Tests.csproj" />
 </Solution>

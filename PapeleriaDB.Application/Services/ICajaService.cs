@@ -6,4 +6,5 @@ public interface ICajaService
 {
     Task<CorteCajaResponseDto> AbrirCajaAsync(AbrirCajaDto dto);
     Task<CorteCajaResponseDto> CerrarCajaAsync(CerrarCajaDto dto);
+    Task<IEnumerable<CajaSupervisionDto>> GetSupervisionAsync(int historyLimit);
 }

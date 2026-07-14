@@ -44,3 +44,26 @@ public class DevolucionResponseDto
     public string Mensaje { get; set; } = string.Empty;
     public decimal MontoReembolsado { get; set; }
 }
+
+public class VentaHistorialDto
+{
+    public int Id { get; set; }
+    public string Folio { get; set; } = string.Empty;
+    public DateTime Fecha { get; set; }
+    public decimal Subtotal { get; set; }
+    public decimal Descuento { get; set; }
+    public decimal Total { get; set; }
+    public string Estado { get; set; } = string.Empty;
+    public string MetodoPago { get; set; } = string.Empty;
+    public IEnumerable<VentaHistorialDetalleDto> Detalles { get; set; } = [];
+}
+
+public class VentaHistorialDetalleDto
+{
+    public int Id { get; set; }
+    public string Tipo { get; set; } = string.Empty;
+    public string Descripcion { get; set; } = string.Empty;
+    public int Cantidad { get; set; }
+    public decimal PrecioUnitario { get; set; }
+    public decimal Subtotal { get; set; }
+}

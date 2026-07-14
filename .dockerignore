@@ -1,0 +1,10 @@
+**/bin
+**/obj
+.git
+.codex-remote-attachments
+**/*.db
+**/*.db-shm
+**/*.db-wal
+**/*.user
+**/*.suo
+README.md

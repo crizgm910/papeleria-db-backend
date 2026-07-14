@@ -26,4 +26,14 @@ public class CajaRepository : Repository<Caja>, ICajaRepository
             .OrderByDescending(c => c.FechaApertura)
             .FirstOrDefaultAsync();
     }
+
+    public async Task<IEnumerable<Caja>> GetAllWithActivityAsync()
+    {
+        return await _context.Cajas.AsNoTracking()
+            .Include(c => c.Cortes)
+            .Include(c => c.Ventas).ThenInclude(v => v.Detalles)
+            .Include(c => c.Movimientos)
+            .OrderBy(c => c.Nombre)
+            .ToListAsync();
+    }
 }

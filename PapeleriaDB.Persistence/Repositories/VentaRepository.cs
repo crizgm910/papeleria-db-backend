@@ -25,4 +25,21 @@ public class VentaRepository : Repository<Venta>, IVentaRepository
             .Where(v => v.CajaId == cajaId && v.Fecha.Date == fecha.Date)
             .ToListAsync();
     }
+
+    public async Task<IEnumerable<Venta>> GetVentasConDetallesAsync(DateTime fechaInicio, DateTime fechaFin)
+    {
+        var finExclusivo = fechaFin.Date.AddDays(1);
+        return await _context.Ventas
+            .AsNoTracking()
+            .Include(v => v.Detalles)
+            .ThenInclude(d => d.Producto)
+            .Where(v => v.Fecha >= fechaInicio.Date && v.Fecha < finExclusivo && v.Estado == "Completada")
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<Venta>> GetRecentWithDetailsAsync(int limit)
+    {
+        return await _context.Ventas.AsNoTracking().Include(v => v.Detalles)
+            .OrderByDescending(v => v.Fecha).Take(limit).ToListAsync();
+    }
 }

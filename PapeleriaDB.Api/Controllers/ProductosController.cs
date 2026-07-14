@@ -46,4 +46,17 @@ public class ProductosController : ControllerBase
         var nuevoProducto = await _productoService.CreateAsync(dto);
         return CreatedAtAction(nameof(GetById), new { id = nuevoProducto.Id }, nuevoProducto);
     }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(int id, [FromBody] CrearProductoDto dto)
+    {
+        return Ok(await _productoService.UpdateAsync(id, dto));
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        await _productoService.DeleteAsync(id);
+        return NoContent();
+    }
 }

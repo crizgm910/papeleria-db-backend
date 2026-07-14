@@ -13,6 +13,42 @@ public class CajaService : ICajaService
         _unitOfWork = unitOfWork;
     }
 
+    public async Task<IEnumerable<CajaSupervisionDto>> GetSupervisionAsync(int historyLimit)
+    {
+        var cajas = await _unitOfWork.Cajas.GetAllWithActivityAsync();
+        var result = new List<CajaSupervisionDto>();
+        foreach (var caja in cajas)
+        {
+            var cortes = caja.Cortes.OrderByDescending(c => c.FechaApertura).ToList();
+            var mapped = new List<CorteSupervisionDto>();
+            foreach (var corte in cortes.Take(Math.Clamp(historyLimit, 1, 100)))
+            {
+                var usuario = await _unitOfWork.Usuarios.GetByIdAsync(corte.UsuarioId);
+                var end = corte.FechaCierre ?? DateTime.Now;
+                var ventas = caja.Ventas.Where(v => v.Estado == "Completada" && v.Fecha >= corte.FechaApertura && v.Fecha <= end).ToList();
+                var movimientos = caja.Movimientos.Where(m => m.Fecha >= corte.FechaApertura && m.Fecha <= end).ToList();
+                var efectivo = ventas.Where(v => v.MetodoPagoPrincipal == "Efectivo").Sum(v => v.Total);
+                var tarjeta = ventas.Where(v => v.MetodoPagoPrincipal == "Tarjeta").Sum(v => v.Total);
+                var transferencia = ventas.Where(v => v.MetodoPagoPrincipal == "Transferencia").Sum(v => v.Total);
+                var ingresos = movimientos.Where(m => m.Tipo == "Ingreso").Sum(m => m.Monto);
+                var egresos = movimientos.Where(m => m.Tipo == "Egreso").Sum(m => m.Monto);
+                var esperado = corte.Estado == "Abierto" ? corte.MontoInicial + efectivo + ingresos - egresos : corte.EfectivoEsperado;
+                mapped.Add(new CorteSupervisionDto
+                {
+                    Id = corte.Id, Usuario = usuario?.NombreCompleto ?? $"Usuario {corte.UsuarioId}",
+                    FechaApertura = corte.FechaApertura, FechaCierre = corte.FechaCierre,
+                    MontoInicial = corte.MontoInicial, VentasEfectivo = efectivo, VentasTarjeta = tarjeta,
+                    VentasTransferencia = transferencia, IngresosExtra = ingresos, Egresos = egresos,
+                    EfectivoEsperado = esperado,
+                    EfectivoContado = corte.Estado == "Cerrado" ? corte.EfectivoContado : null,
+                    Diferencia = corte.Estado == "Cerrado" ? corte.Diferencia : null, Estado = corte.Estado
+                });
+            }
+            result.Add(new CajaSupervisionDto { Id = caja.Id, Nombre = caja.Nombre, EstaAbierta = caja.EstaAbierta, CorteActual = mapped.FirstOrDefault(c => c.Estado == "Abierto"), Historial = mapped.Where(c => c.Estado == "Cerrado") });
+        }
+        return result;
+    }
+
     public async Task<CorteCajaResponseDto> AbrirCajaAsync(AbrirCajaDto dto)
     {
         var caja = await _unitOfWork.Cajas.GetByIdAsync(dto.CajaId);

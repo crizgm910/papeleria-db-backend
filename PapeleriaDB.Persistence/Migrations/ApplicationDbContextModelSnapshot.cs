@@ -17,6 +17,49 @@ namespace PapeleriaDB.Persistence.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.9");
 
+            modelBuilder.Entity("PapeleriaDB.Domain.Entities.Auditoria", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Accion")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("EstadoHttp")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("Fecha")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Metodo")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Recurso")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("RecursoId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Ruta")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("UsuarioNombre")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Auditorias");
+                });
+
             modelBuilder.Entity("PapeleriaDB.Domain.Entities.Caja", b =>
                 {
                     b.Property<int>("Id")
@@ -54,6 +97,39 @@ namespace PapeleriaDB.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Categorias");
+                });
+
+            modelBuilder.Entity("PapeleriaDB.Domain.Entities.Compra", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("Fecha")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FolioProveedor")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Notas")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("ProveedorId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<decimal>("Total")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProveedorId");
+
+                    b.ToTable("Compras");
                 });
 
             modelBuilder.Entity("PapeleriaDB.Domain.Entities.CorteCaja", b =>
@@ -101,6 +177,38 @@ namespace PapeleriaDB.Persistence.Migrations
                     b.HasIndex("CajaId");
 
                     b.ToTable("CortesCaja");
+                });
+
+            modelBuilder.Entity("PapeleriaDB.Domain.Entities.DetalleCompra", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Cantidad")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("CompraId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<decimal>("CostoUnitario")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("ProductoId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<decimal>("Subtotal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompraId");
+
+                    b.HasIndex("ProductoId");
+
+                    b.ToTable("DetallesCompra");
                 });
 
             modelBuilder.Entity("PapeleriaDB.Domain.Entities.DetalleVenta", b =>
@@ -180,6 +288,45 @@ namespace PapeleriaDB.Persistence.Migrations
                     b.ToTable("MovimientosCaja");
                 });
 
+            modelBuilder.Entity("PapeleriaDB.Domain.Entities.MovimientoInventario", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Cantidad")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("Fecha")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Motivo")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("ProductoId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("StockAnterior")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("StockNuevo")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Tipo")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductoId");
+
+                    b.ToTable("MovimientosInventario");
+                });
+
             modelBuilder.Entity("PapeleriaDB.Domain.Entities.Producto", b =>
                 {
                     b.Property<int>("Id")
@@ -228,7 +375,47 @@ namespace PapeleriaDB.Persistence.Migrations
 
                     b.HasIndex("CategoriaId");
 
+                    b.HasIndex("CodigoBarras")
+                        .IsUnique();
+
+                    b.HasIndex("CodigoInterno")
+                        .IsUnique();
+
                     b.ToTable("Productos");
+                });
+
+            modelBuilder.Entity("PapeleriaDB.Domain.Entities.Proveedor", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Contacto")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("NombreEmpresa")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Rfc")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Telefono")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Rfc")
+                        .IsUnique();
+
+                    b.ToTable("Proveedores");
                 });
 
             modelBuilder.Entity("PapeleriaDB.Domain.Entities.Servicio", b =>
@@ -243,6 +430,9 @@ namespace PapeleriaDB.Persistence.Migrations
 
                     b.Property<string>("Descripcion")
                         .HasColumnType("TEXT");
+
+                    b.Property<bool>("Estado")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
@@ -333,6 +523,17 @@ namespace PapeleriaDB.Persistence.Migrations
                     b.ToTable("Ventas");
                 });
 
+            modelBuilder.Entity("PapeleriaDB.Domain.Entities.Compra", b =>
+                {
+                    b.HasOne("PapeleriaDB.Domain.Entities.Proveedor", "Proveedor")
+                        .WithMany("Compras")
+                        .HasForeignKey("ProveedorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Proveedor");
+                });
+
             modelBuilder.Entity("PapeleriaDB.Domain.Entities.CorteCaja", b =>
                 {
                     b.HasOne("PapeleriaDB.Domain.Entities.Caja", "Caja")
@@ -342,6 +543,25 @@ namespace PapeleriaDB.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("Caja");
+                });
+
+            modelBuilder.Entity("PapeleriaDB.Domain.Entities.DetalleCompra", b =>
+                {
+                    b.HasOne("PapeleriaDB.Domain.Entities.Compra", "Compra")
+                        .WithMany("Detalles")
+                        .HasForeignKey("CompraId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PapeleriaDB.Domain.Entities.Producto", "Producto")
+                        .WithMany()
+                        .HasForeignKey("ProductoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Compra");
+
+                    b.Navigation("Producto");
                 });
 
             modelBuilder.Entity("PapeleriaDB.Domain.Entities.DetalleVenta", b =>
@@ -370,6 +590,17 @@ namespace PapeleriaDB.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("Caja");
+                });
+
+            modelBuilder.Entity("PapeleriaDB.Domain.Entities.MovimientoInventario", b =>
+                {
+                    b.HasOne("PapeleriaDB.Domain.Entities.Producto", "Producto")
+                        .WithMany()
+                        .HasForeignKey("ProductoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Producto");
                 });
 
             modelBuilder.Entity("PapeleriaDB.Domain.Entities.Producto", b =>
@@ -406,6 +637,16 @@ namespace PapeleriaDB.Persistence.Migrations
             modelBuilder.Entity("PapeleriaDB.Domain.Entities.Categoria", b =>
                 {
                     b.Navigation("Productos");
+                });
+
+            modelBuilder.Entity("PapeleriaDB.Domain.Entities.Compra", b =>
+                {
+                    b.Navigation("Detalles");
+                });
+
+            modelBuilder.Entity("PapeleriaDB.Domain.Entities.Proveedor", b =>
+                {
+                    b.Navigation("Compras");
                 });
 
             modelBuilder.Entity("PapeleriaDB.Domain.Entities.Venta", b =>

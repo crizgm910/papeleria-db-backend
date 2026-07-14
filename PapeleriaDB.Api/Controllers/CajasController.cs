@@ -17,6 +17,13 @@ public class CajasController : ControllerBase
         _cajaService = cajaService;
     }
 
+    [Authorize(Roles = "Admin")]
+    [HttpGet("supervision")]
+    public async Task<IActionResult> GetSupervision([FromQuery] int historial = 20)
+    {
+        return Ok(await _cajaService.GetSupervisionAsync(historial));
+    }
+
     [HttpPost("abrir")]
     public async Task<IActionResult> AbrirCaja([FromBody] AbrirCajaDto dto)
     {

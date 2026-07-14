@@ -29,6 +29,9 @@ public class VentasController : ControllerBase
         return Ok(respuesta);
     }
 
+    [HttpGet]
+    public async Task<IActionResult> GetRecent([FromQuery] int limit = 50) => Ok(await _ventaService.GetRecentAsync(limit));
+
     [HttpPost("{id}/devolucion")]
     public async Task<IActionResult> RegistrarDevolucion(int id, [FromBody] List<DevolucionItemDto> devoluciones)
     {

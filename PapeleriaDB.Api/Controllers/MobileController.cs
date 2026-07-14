@@ -9,28 +9,13 @@ namespace PapeleriaDB.Api.Controllers;
 [Route("api/[controller]")]
 public class MobileController : ControllerBase
 {
-    private readonly IReportesService _reportesService;
-    private readonly ICajaService _cajaService;
+    private readonly IMobileDashboardService _dashboardService;
 
-    public MobileController(IReportesService reportesService, ICajaService cajaService)
-    {
-        _reportesService = reportesService;
-        _cajaService = cajaService;
-    }
+    public MobileController(IMobileDashboardService dashboardService) => _dashboardService = dashboardService;
 
     [HttpGet("dashboard")]
     public async Task<IActionResult> GetDashboard()
     {
-        // Resumen ligero para la app móvil
-        var ventasHoy = await _reportesService.GetResumenVentasPorFechaAsync(DateTime.Now, DateTime.Now);
-        var alertasStock = await _reportesService.GetProductosConBajoStockAsync(5);
-        
-        // Retornar un objeto compacto
-        return Ok(new
-        {
-            Fecha = DateTime.Now,
-            VentasHoy = ventasHoy,
-            TotalAlertasStock = alertasStock.Count()
-        });
+        return Ok(await _dashboardService.GetAsync());
     }
 }

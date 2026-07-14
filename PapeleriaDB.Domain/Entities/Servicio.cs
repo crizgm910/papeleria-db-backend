@@ -7,4 +7,5 @@ public class Servicio
     public string Nombre { get; set; } = string.Empty;
     public decimal PrecioBase { get; set; }
     public string? Descripcion { get; set; }
+    public bool Estado { get; set; } = true;
 }

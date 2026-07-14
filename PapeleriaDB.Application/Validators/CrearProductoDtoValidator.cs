@@ -12,7 +12,10 @@ public class CrearProductoDtoValidator : AbstractValidator<CrearProductoDto>
             .MaximumLength(100).WithMessage("El nombre no puede exceder los 100 caracteres.");
 
         RuleFor(x => x.CodigoInterno)
-            .NotEmpty().WithMessage("El código interno es obligatorio.");
+            .MaximumLength(100).WithMessage("El código interno no puede exceder los 100 caracteres.");
+
+        RuleFor(x => x.CodigoBarras)
+            .MaximumLength(100).WithMessage("El código de barras no puede exceder los 100 caracteres.");
 
         RuleFor(x => x.PrecioVenta)
             .GreaterThan(0).WithMessage("El precio de venta debe ser mayor a 0.");

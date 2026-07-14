@@ -36,7 +36,7 @@ public class VentaServiceTests
         {
             CajaId = 1,
             UsuarioId = 1,
-            Detalles = new List<DetalleVentaDto> { new DetalleVentaDto { ProductoId = 99, Cantidad = 1 } }
+            Detalles = new List<CrearDetalleVentaDto> { new CrearDetalleVentaDto { ProductoId = 99, Cantidad = 1 } }
         };
 
         // Act
@@ -58,7 +58,7 @@ public class VentaServiceTests
         {
             CajaId = 1,
             UsuarioId = 1,
-            Detalles = new List<DetalleVentaDto> { new DetalleVentaDto { ProductoId = 1, Cantidad = 5 } }
+            Detalles = new List<CrearDetalleVentaDto> { new CrearDetalleVentaDto { ProductoId = 1, Cantidad = 5 } }
         };
 
         // Act
@@ -80,7 +80,7 @@ public class VentaServiceTests
         {
             CajaId = 1,
             UsuarioId = 1,
-            Detalles = new List<DetalleVentaDto> { new DetalleVentaDto { ProductoId = 1, Cantidad = 3 } }
+            Detalles = new List<CrearDetalleVentaDto> { new CrearDetalleVentaDto { ProductoId = 1, Cantidad = 3 } }
         };
 
         // Act

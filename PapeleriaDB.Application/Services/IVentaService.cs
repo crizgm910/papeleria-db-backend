@@ -6,4 +6,5 @@ public interface IVentaService
 {
     Task<VentaResponseDto> RegistrarVentaAsync(CrearVentaDto dto);
     Task<DevolucionResponseDto> DevolverArticulosAsync(int ventaId, List<DevolucionItemDto> devoluciones);
+    Task<IEnumerable<VentaHistorialDto>> GetRecentAsync(int limit);
 }

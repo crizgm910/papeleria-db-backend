@@ -11,6 +11,11 @@ public class ProductoRepository : Repository<Producto>, IProductoRepository
     {
     }
 
+    public async Task<Producto?> GetByCodigoInternoAsync(string codigoInterno)
+    {
+        return await _context.Productos.FirstOrDefaultAsync(p => p.CodigoInterno == codigoInterno);
+    }
+
     public async Task<Producto?> GetByCodigoBarrasAsync(string codigoBarras)
     {
         return await _context.Productos.FirstOrDefaultAsync(p => p.CodigoBarras == codigoBarras);

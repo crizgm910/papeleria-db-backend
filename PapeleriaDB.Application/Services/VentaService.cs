@@ -13,6 +13,19 @@ public class VentaService : IVentaService
         _unitOfWork = unitOfWork;
     }
 
+    public async Task<IEnumerable<VentaHistorialDto>> GetRecentAsync(int limit)
+    {
+        var ventas = await _unitOfWork.Ventas.GetRecentWithDetailsAsync(Math.Clamp(limit, 1, 200));
+        return ventas.Select(v => new VentaHistorialDto
+        {
+            Id = v.Id, Folio = v.Folio,
+            Fecha = v.Fecha.Kind == DateTimeKind.Unspecified ? DateTime.SpecifyKind(v.Fecha, DateTimeKind.Local) : v.Fecha,
+            Subtotal = v.Subtotal, Descuento = v.Descuento, Total = v.Total,
+            Estado = v.Estado, MetodoPago = v.MetodoPagoPrincipal,
+            Detalles = v.Detalles.Select(d => new VentaHistorialDetalleDto { Id = d.Id, Tipo = d.TipoItem, Descripcion = d.Descripcion, Cantidad = d.Cantidad, PrecioUnitario = d.PrecioUnitario, Subtotal = d.Subtotal })
+        });
+    }
+
     public async Task<VentaResponseDto> RegistrarVentaAsync(CrearVentaDto dto)
     {
         try

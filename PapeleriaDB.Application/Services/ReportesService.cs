@@ -28,16 +28,16 @@ public class ReportesService : IReportesService
         });
     }
 
-    public async Task<IEnumerable<object>> GetTopProductosMasVendidosAsync(int top = 5)
+    public async Task<IEnumerable<ProductoTopDto>> GetTopProductosMasVendidosAsync(int top = 5)
     {
         // En un escenario real con muchos datos esto debería ir a un Repositorio específico 
         // usando IQueryable para no traer todo a memoria, pero como MVP usamos el GetAll.
-        var ventas = await _unitOfWork.Ventas.GetAllAsync();
+        var ventas = await _unitOfWork.Ventas.GetVentasConDetallesAsync(DateTime.MinValue, DateTime.MaxValue.AddDays(-1));
         
         var topVendidos = ventas
-            .SelectMany(v => v.Detalles)
-            .GroupBy(d => new { d.ProductoId, d.Producto.Nombre })
-            .Select(g => new
+            .SelectMany(v => v.Detalles.Where(d => d.ProductoId.HasValue))
+            .GroupBy(d => new { ProductoId = d.ProductoId!.Value, Nombre = d.Producto?.Nombre ?? d.Descripcion })
+            .Select(g => new ProductoTopDto
             {
                 ProductoId = g.Key.ProductoId,
                 ProductoNombre = g.Key.Nombre,
@@ -51,20 +51,18 @@ public class ReportesService : IReportesService
         return topVendidos;
     }
 
-    public async Task<object> GetResumenVentasPorFechaAsync(DateTime fechaInicio, DateTime fechaFin)
+    public async Task<ResumenVentasDto> GetResumenVentasPorFechaAsync(DateTime fechaInicio, DateTime fechaFin)
     {
-        var ventas = await _unitOfWork.Ventas.GetAllAsync();
-        
-        var ventasFiltradas = ventas
-            .Where(v => v.Fecha.Date >= fechaInicio.Date && v.Fecha.Date <= fechaFin.Date)
-            .ToList();
+        var ventasFiltradas = (await _unitOfWork.Ventas.GetVentasConDetallesAsync(fechaInicio, fechaFin)).ToList();
+        var ingreso = ventasFiltradas.Sum(v => v.Total);
 
-        return new
+        return new ResumenVentasDto
         {
             FechaInicio = fechaInicio.Date,
             FechaFin = fechaFin.Date,
             TotalVentas = ventasFiltradas.Count,
-            IngresoTotal = ventasFiltradas.Sum(v => v.Total)
+            IngresoTotal = ingreso,
+            TicketPromedio = ventasFiltradas.Count == 0 ? 0 : ingreso / ventasFiltradas.Count
         };
     }
 }
