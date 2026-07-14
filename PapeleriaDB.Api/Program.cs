@@ -208,7 +208,6 @@ static string NormalizePostgresConnectionString(string value)
         Database = uri.AbsolutePath.Trim('/'),
         Username = Uri.UnescapeDataString(credentials[0]),
         Password = Uri.UnescapeDataString(credentials[1]),
-        SslMode = SslMode.Require,
-        TrustServerCertificate = true
+        SslMode = SslMode.Require
     }.ConnectionString;
 }
