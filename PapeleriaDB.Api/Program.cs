@@ -13,6 +13,7 @@ using System.Text;
 using PapeleriaDB.Api.Middleware;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
+using Npgsql;
 
 // Mantiene la semántica de fechas del sistema SQLite existente durante la
 // transición a PostgreSQL. La normalización total a UTC queda para una migración posterior.
@@ -42,6 +43,11 @@ var usePostgres = string.Equals(builder.Configuration["DatabaseProvider"], "Post
 if (usePostgres && string.IsNullOrWhiteSpace(postgresConnection))
 {
     throw new InvalidOperationException("Configura ConnectionStrings:DefaultConnection para utilizar PostgreSQL.");
+}
+
+if (usePostgres)
+{
+    postgresConnection = NormalizePostgresConnectionString(postgresConnection!);
 }
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -178,4 +184,31 @@ static async Task BootstrapPostgresAsync(ApplicationDbContext context)
     {
         await connection.CloseAsync();
     }
+}
+
+static string NormalizePostgresConnectionString(string value)
+{
+    if (!value.StartsWith("postgres://", StringComparison.OrdinalIgnoreCase)
+        && !value.StartsWith("postgresql://", StringComparison.OrdinalIgnoreCase))
+    {
+        return value;
+    }
+
+    var uri = new Uri(value);
+    var credentials = uri.UserInfo.Split(':', 2);
+    if (credentials.Length != 2)
+    {
+        throw new InvalidOperationException("La conexión de PostgreSQL no contiene usuario y contraseña.");
+    }
+
+    return new NpgsqlConnectionStringBuilder
+    {
+        Host = uri.Host,
+        Port = uri.IsDefaultPort ? 5432 : uri.Port,
+        Database = uri.AbsolutePath.Trim('/'),
+        Username = Uri.UnescapeDataString(credentials[0]),
+        Password = Uri.UnescapeDataString(credentials[1]),
+        SslMode = SslMode.Require,
+        TrustServerCertificate = true
+    }.ConnectionString;
 }
