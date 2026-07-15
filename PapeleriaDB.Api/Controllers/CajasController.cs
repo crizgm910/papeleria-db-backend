@@ -17,6 +17,20 @@ public class CajasController : ControllerBase
         _cajaService = cajaService;
     }
 
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        return Ok(await _cajaService.GetAllAsync());
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] CrearCajaDto dto)
+    {
+        var caja = await _cajaService.CreateAsync(dto);
+        return Created($"api/cajas/{caja.Id}", caja);
+    }
+
     [Authorize(Roles = "Admin")]
     [HttpGet("supervision")]
     public async Task<IActionResult> GetSupervision([FromQuery] int historial = 20)

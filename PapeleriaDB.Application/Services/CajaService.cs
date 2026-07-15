@@ -13,6 +13,30 @@ public class CajaService : ICajaService
         _unitOfWork = unitOfWork;
     }
 
+    public async Task<IEnumerable<CajaDto>> GetAllAsync()
+    {
+        var cajas = await _unitOfWork.Cajas.GetAllAsync();
+        return cajas
+            .OrderBy(c => c.Id)
+            .Select(c => new CajaDto { Id = c.Id, Nombre = c.Nombre, EstaAbierta = c.EstaAbierta });
+    }
+
+    public async Task<CajaDto> CreateAsync(CrearCajaDto dto)
+    {
+        var nombre = dto.Nombre.Trim();
+        var existentes = await _unitOfWork.Cajas.GetAllAsync();
+        if (existentes.Any(c => string.Equals(c.Nombre, nombre, StringComparison.OrdinalIgnoreCase)))
+        {
+            throw new InvalidOperationException($"Ya existe una caja llamada '{nombre}'.");
+        }
+
+        var caja = new Caja { Nombre = nombre, EstaAbierta = false };
+        await _unitOfWork.Cajas.AddAsync(caja);
+        await _unitOfWork.CompleteAsync();
+
+        return new CajaDto { Id = caja.Id, Nombre = caja.Nombre, EstaAbierta = caja.EstaAbierta };
+    }
+
     public async Task<IEnumerable<CajaSupervisionDto>> GetSupervisionAsync(int historyLimit)
     {
         var cajas = await _unitOfWork.Cajas.GetAllWithActivityAsync();

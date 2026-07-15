@@ -1,5 +1,17 @@
 namespace PapeleriaDB.Application.DTOs;
 
+public class CajaDto
+{
+    public int Id { get; set; }
+    public string Nombre { get; set; } = string.Empty;
+    public bool EstaAbierta { get; set; }
+}
+
+public class CrearCajaDto
+{
+    public string Nombre { get; set; } = string.Empty;
+}
+
 public class AbrirCajaDto
 {
     public int CajaId { get; set; }
