@@ -12,6 +12,7 @@ public class VentaServiceTests
     private readonly Mock<IUnitOfWork> _mockUnitOfWork;
     private readonly Mock<IProductoRepository> _mockProductoRepo;
     private readonly Mock<IVentaRepository> _mockVentaRepo;
+    private readonly Mock<ICajaRepository> _mockCajaRepo;
     private readonly VentaService _ventaService;
 
     public VentaServiceTests()
@@ -19,9 +20,17 @@ public class VentaServiceTests
         _mockUnitOfWork = new Mock<IUnitOfWork>();
         _mockProductoRepo = new Mock<IProductoRepository>();
         _mockVentaRepo = new Mock<IVentaRepository>();
+        _mockCajaRepo = new Mock<ICajaRepository>();
 
         _mockUnitOfWork.Setup(u => u.Productos).Returns(_mockProductoRepo.Object);
         _mockUnitOfWork.Setup(u => u.Ventas).Returns(_mockVentaRepo.Object);
+        _mockUnitOfWork.Setup(u => u.Cajas).Returns(_mockCajaRepo.Object);
+        _mockCajaRepo.Setup(c => c.GetByIdAsync(It.IsAny<int>())).ReturnsAsync((int id) => new Caja
+        {
+            Id = id,
+            Nombre = $"Caja {id}",
+            EstaAbierta = true
+        });
 
         _ventaService = new VentaService(_mockUnitOfWork.Object);
     }

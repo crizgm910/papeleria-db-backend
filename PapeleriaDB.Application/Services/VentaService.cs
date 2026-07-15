@@ -30,6 +30,17 @@ public class VentaService : IVentaService
     {
         try
         {
+            var caja = await _unitOfWork.Cajas.GetByIdAsync(dto.CajaId);
+            if (caja == null)
+            {
+                return new VentaResponseDto { Exito = false, Mensaje = "La caja asignada no existe." };
+            }
+
+            if (!caja.EstaAbierta)
+            {
+                return new VentaResponseDto { Exito = false, Mensaje = $"{caja.Nombre} está cerrada. Ábrela antes de registrar ventas." };
+            }
+
             var venta = new Venta
             {
                 Folio = $"V-{DateTime.Now:yyyyMMddHHmmss}",
