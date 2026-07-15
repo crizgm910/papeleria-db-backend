@@ -37,4 +37,30 @@ public class VentaCajaTests
         ventas.Verify(r => r.AddAsync(It.IsAny<Venta>()), Times.Never);
         unitOfWork.Verify(u => u.CompleteAsync(), Times.Never);
     }
+
+    [Fact]
+    public async Task DevolverArticulosAsync_RechazaCajaCerradaSinModificarVenta()
+    {
+        var unitOfWork = new Mock<IUnitOfWork>();
+        var cajas = new Mock<ICajaRepository>();
+        var ventas = new Mock<IVentaRepository>();
+        var venta = new Venta
+        {
+            Id = 1, CajaId = 1, Folio = "V-TEST", Total = 35m, Subtotal = 35m, Estado = "Completada",
+            Detalles = [new DetalleVenta { Id = 8, Cantidad = 1, PrecioUnitario = 35m, Subtotal = 35m, TipoItem = "Producto", ProductoId = 1 }]
+        };
+        unitOfWork.SetupGet(u => u.Cajas).Returns(cajas.Object);
+        unitOfWork.SetupGet(u => u.Ventas).Returns(ventas.Object);
+        ventas.Setup(r => r.GetVentaConDetallesAsync(1)).ReturnsAsync(venta);
+        cajas.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(new Caja { Id = 1, EstaAbierta = false });
+
+        var service = new VentaService(unitOfWork.Object);
+        var result = await service.DevolverArticulosAsync(1, [new DevolucionItemDto { DetalleVentaId = 8, CantidadDevolver = 1 }]);
+
+        Assert.False(result.Exito);
+        Assert.Contains("cerrada", result.Mensaje, StringComparison.OrdinalIgnoreCase);
+        Assert.Equal(35m, venta.Total);
+        Assert.Equal(1, venta.Detalles.Single().Cantidad);
+        unitOfWork.Verify(u => u.CompleteAsync(), Times.Never);
+    }
 }
