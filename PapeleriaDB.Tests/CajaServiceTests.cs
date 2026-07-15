@@ -77,7 +77,8 @@ public class CajaServiceTests
             Movimientos =
             [
                 new MovimientoCaja { Tipo = "Ingreso", Monto = 20m, Fecha = apertura.AddMinutes(30) },
-                new MovimientoCaja { Tipo = "Egreso", Monto = 10m, Fecha = apertura.AddMinutes(40) }
+                new MovimientoCaja { Tipo = "Egreso", Monto = 10m, Motivo = "Compra urgente", Fecha = apertura.AddMinutes(40) },
+                new MovimientoCaja { Tipo = "Egreso", Monto = 35m, Motivo = "Devolución parcial/total de Venta V-TEST", Fecha = apertura.AddMinutes(45) }
             ]
         };
 

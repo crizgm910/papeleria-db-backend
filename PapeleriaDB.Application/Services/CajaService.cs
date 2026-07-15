@@ -55,7 +55,9 @@ public class CajaService : ICajaService
                 var tarjeta = ventas.Where(v => v.MetodoPagoPrincipal == "Tarjeta").Sum(v => v.Total);
                 var transferencia = ventas.Where(v => v.MetodoPagoPrincipal == "Transferencia").Sum(v => v.Total);
                 var ingresos = movimientos.Where(m => m.Tipo == "Ingreso").Sum(m => m.Monto);
-                var egresos = movimientos.Where(m => m.Tipo == "Egreso").Sum(m => m.Monto);
+                // Las devoluciones ya reducen el total de la venta original. Se conservan
+                // como movimientos informativos, pero no se descuentan una segunda vez.
+                var egresos = movimientos.Where(m => m.Tipo == "Egreso" && !EsDevolucion(m)).Sum(m => m.Monto);
                 var esperado = corte.Estado == "Abierto" ? corte.MontoInicial + efectivo + ingresos - egresos : corte.EfectivoEsperado;
                 mapped.Add(new CorteSupervisionDto
                 {
@@ -113,7 +115,7 @@ public class CajaService : ICajaService
         var ventasTarjeta = caja.Ventas.Where(v => v.MetodoPagoPrincipal == "Tarjeta").Sum(v => v.Total);
 
         var movimientosIngreso = caja.Movimientos.Where(m => m.Tipo == "Ingreso").Sum(m => m.Monto);
-        var movimientosEgreso = caja.Movimientos.Where(m => m.Tipo == "Egreso").Sum(m => m.Monto);
+        var movimientosEgreso = caja.Movimientos.Where(m => m.Tipo == "Egreso" && !EsDevolucion(m)).Sum(m => m.Monto);
 
         corteAbierto.EfectivoEsperado = corteAbierto.MontoInicial + ventasEfectivo + movimientosIngreso - movimientosEgreso;
         corteAbierto.EfectivoContado = dto.EfectivoContado;
@@ -137,4 +139,8 @@ public class CajaService : ICajaService
             TotalVendidoTarjeta = corteAbierto.TotalVendidoTarjeta
         };
     }
+
+    private static bool EsDevolucion(MovimientoCaja movimiento) =>
+        movimiento.Motivo.StartsWith("Devolución", StringComparison.OrdinalIgnoreCase) ||
+        movimiento.Motivo.StartsWith("Devolucion", StringComparison.OrdinalIgnoreCase);
 }
