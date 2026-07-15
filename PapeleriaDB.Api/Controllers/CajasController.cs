@@ -23,6 +23,13 @@ public class CajasController : ControllerBase
         return Ok(await _cajaService.GetAllAsync());
     }
 
+    [HttpGet("{id:int}/estado")]
+    public async Task<IActionResult> GetEstado(int id, [FromQuery] int historial = 20)
+    {
+        var caja = (await _cajaService.GetSupervisionAsync(historial)).FirstOrDefault(c => c.Id == id);
+        return caja == null ? NotFound(new { mensaje = "La caja no existe." }) : Ok(caja);
+    }
+
     [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CrearCajaDto dto)
