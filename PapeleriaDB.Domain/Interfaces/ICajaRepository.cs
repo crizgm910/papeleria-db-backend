@@ -7,4 +7,5 @@ public interface ICajaRepository : IRepository<Caja>
     Task<Caja?> GetCajaConActividadDesdeAsync(int cajaId, DateTime fechaDesde);
     Task<CorteCaja?> GetUltimoCorteAbiertoAsync(int cajaId);
     Task<IEnumerable<Caja>> GetAllWithActivityAsync();
+    Task<IEnumerable<MovimientoCaja>> GetMovimientosRecientesAsync(int cajaId, int limit);
 }

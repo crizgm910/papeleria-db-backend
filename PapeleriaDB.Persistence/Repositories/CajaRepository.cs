@@ -36,4 +36,11 @@ public class CajaRepository : Repository<Caja>, ICajaRepository
             .OrderBy(c => c.Nombre)
             .ToListAsync();
     }
+
+    public async Task<IEnumerable<MovimientoCaja>> GetMovimientosRecientesAsync(int cajaId, int limit) =>
+        await _context.MovimientosCaja.AsNoTracking()
+            .Where(m => m.CajaId == cajaId)
+            .OrderByDescending(m => m.Fecha)
+            .Take(limit)
+            .ToListAsync();
 }

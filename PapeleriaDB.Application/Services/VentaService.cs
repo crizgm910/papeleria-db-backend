@@ -159,6 +159,12 @@ public class VentaService : IVentaService
                 return new DevolucionResponseDto { Exito = false, Mensaje = "La venta ya está cancelada." };
             }
 
+            var caja = await _unitOfWork.Cajas.GetByIdAsync(venta.CajaId);
+            if (caja == null || !caja.EstaAbierta)
+            {
+                return new DevolucionResponseDto { Exito = false, Mensaje = "La caja de la venta está cerrada. Ábrela antes de procesar la devolución." };
+            }
+
             decimal totalReembolso = 0;
 
             foreach (var devolucion in devoluciones)
@@ -220,12 +226,8 @@ public class VentaService : IVentaService
             
             // Wait, I UnitOfWork doesn't have MovimientosCaja exposed!
             // I should just add the Movimiento to the Caja itself.
-            var caja = await _unitOfWork.Cajas.GetByIdAsync(venta.CajaId);
-            if (caja != null)
-            {
-                caja.Movimientos.Add(movimientoCaja);
-                await _unitOfWork.Cajas.UpdateAsync(caja);
-            }
+            caja.Movimientos.Add(movimientoCaja);
+            await _unitOfWork.Cajas.UpdateAsync(caja);
 
             await _unitOfWork.CompleteAsync();
 

@@ -85,6 +85,7 @@ builder.Services.AddScoped<IAuditoriaService, AuditoriaService>();
 builder.Services.AddScoped<IMobileDashboardService, MobileDashboardService>();
 builder.Services.AddScoped<IProveedorService, ProveedorService>();
 builder.Services.AddScoped<ICompraService, CompraService>();
+builder.Services.AddScoped<IMovimientoCajaService, MovimientoCajaService>();
 
 // Configure JWT Authentication
 var key = Encoding.ASCII.GetBytes(builder.Configuration["JwtSettings:Secret"] ?? "SuperSecretaClaveLargaParaJWTPapeleria2026!!");
