@@ -11,9 +11,13 @@ public class MobileDashboardService : IMobileDashboardService
 
     public async Task<MobileDashboardDto> GetAsync()
     {
-        var now = DateTime.Now;
-        var start = now.Date;
+        var zona = GetMexicoTimeZone();
+        var nowUtc = DateTime.UtcNow;
+        var now = TimeZoneInfo.ConvertTimeFromUtc(nowUtc, zona);
+        var start = DateTime.SpecifyKind(now.Date, DateTimeKind.Unspecified);
         var end = start.AddDays(1);
+        var startUtc = TimeZoneInfo.ConvertTimeToUtc(start, zona);
+        var endUtc = TimeZoneInfo.ConvertTimeToUtc(end, zona);
 
         // El DbContext de la unidad de trabajo es compartido: las consultas se ejecutan
         // en secuencia para respetar la seguridad de hilos de Entity Framework.
@@ -21,13 +25,10 @@ public class MobileDashboardService : IMobileDashboardService
         var productos = await _unitOfWork.Productos.GetAllAsync();
         var servicios = await _unitOfWork.Servicios.GetAllAsync();
         var movimientos = await _unitOfWork.MovimientosInventario.GetRecentAsync(5);
-        var zona = GetMexicoTimeZone();
-        var startUtc = TimeZoneInfo.ConvertTimeToUtc(DateTime.SpecifyKind(start, DateTimeKind.Unspecified), zona);
-        var endUtc = TimeZoneInfo.ConvertTimeToUtc(DateTime.SpecifyKind(end, DateTimeKind.Unspecified), zona);
         var totalMovimientos = await _unitOfWork.MovimientosInventario.CountBetweenAsync(startUtc, endUtc);
 
         var ventasHoy = ventas
-            .Where(v => v.Fecha >= start && v.Fecha < end && v.Estado != "Cancelada")
+            .Where(v => ToUtc(v.Fecha) >= startUtc && ToUtc(v.Fecha) < endUtc && v.Estado != "Cancelada")
             .ToList();
         var bajoStock = productos
             .Where(p => p.Estado && p.StockActual <= p.StockMinimo)
@@ -83,4 +84,11 @@ public class MobileDashboardService : IMobileDashboardService
         try { return TimeZoneInfo.FindSystemTimeZoneById("America/Mexico_City"); }
         catch (TimeZoneNotFoundException) { return TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time (Mexico)"); }
     }
+
+    private static DateTime ToUtc(DateTime value) => value.Kind switch
+    {
+        DateTimeKind.Utc => value,
+        DateTimeKind.Local => value.ToUniversalTime(),
+        _ => DateTime.SpecifyKind(value, DateTimeKind.Utc)
+    };
 }
