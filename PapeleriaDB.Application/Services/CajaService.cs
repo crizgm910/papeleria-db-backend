@@ -100,13 +100,13 @@ public class CajaService : ICajaService
 
     public async Task<CorteCajaResponseDto> CerrarCajaAsync(CerrarCajaDto dto)
     {
-        var caja = await _unitOfWork.Cajas.GetCajaConVentasDelDiaAsync(dto.CajaId, DateTime.Now);
-        if (caja == null || !caja.EstaAbierta) 
-            return new CorteCajaResponseDto { Exito = false, Mensaje = "La caja no existe o no está abierta." };
-
         var corteAbierto = await _unitOfWork.Cajas.GetUltimoCorteAbiertoAsync(dto.CajaId);
         if (corteAbierto == null) 
             return new CorteCajaResponseDto { Exito = false, Mensaje = "No se encontró un turno abierto para esta caja." };
+
+        var caja = await _unitOfWork.Cajas.GetCajaConActividadDesdeAsync(dto.CajaId, corteAbierto.FechaApertura);
+        if (caja == null || !caja.EstaAbierta)
+            return new CorteCajaResponseDto { Exito = false, Mensaje = "La caja no existe o no está abierta." };
 
         // Calcular matemática del corte de caja
         var ventasEfectivo = caja.Ventas.Where(v => v.MetodoPagoPrincipal == "Efectivo").Sum(v => v.Total);

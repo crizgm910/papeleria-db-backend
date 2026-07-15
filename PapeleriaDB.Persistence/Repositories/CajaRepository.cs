@@ -11,11 +11,11 @@ public class CajaRepository : Repository<Caja>, ICajaRepository
     {
     }
 
-    public async Task<Caja?> GetCajaConVentasDelDiaAsync(int cajaId, DateTime fecha)
+    public async Task<Caja?> GetCajaConActividadDesdeAsync(int cajaId, DateTime fechaDesde)
     {
         return await _context.Cajas
-            .Include(c => c.Ventas.Where(v => v.Fecha.Date == fecha.Date && v.Estado == "Completada"))
-            .Include(c => c.Movimientos.Where(m => m.Fecha.Date == fecha.Date))
+            .Include(c => c.Ventas.Where(v => v.Fecha >= fechaDesde && v.Estado == "Completada"))
+            .Include(c => c.Movimientos.Where(m => m.Fecha >= fechaDesde))
             .FirstOrDefaultAsync(c => c.Id == cajaId);
     }
 
