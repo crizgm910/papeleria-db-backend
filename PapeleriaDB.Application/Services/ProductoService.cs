@@ -1,7 +1,6 @@
 using PapeleriaDB.Application.DTOs;
 using PapeleriaDB.Domain.Entities;
 using PapeleriaDB.Domain.Interfaces;
-using System.Security.Cryptography;
 
 namespace PapeleriaDB.Application.Services;
 
@@ -74,16 +73,14 @@ public class ProductoService : IProductoService
 
     public async Task<ProductoDto> CreateAsync(CrearProductoDto dto)
     {
-        var codigoInterno = string.IsNullOrWhiteSpace(dto.CodigoInterno)
-            ? $"AUTO-{Guid.NewGuid():N}"
-            : dto.CodigoInterno.Trim();
+        var codigoInterno = dto.CodigoInterno.Trim();
         var codigoBarras = string.IsNullOrWhiteSpace(dto.CodigoBarras)
-            ? GenerateEan13()
+            ? null
             : dto.CodigoBarras.Trim();
 
         if (await _unitOfWork.Productos.GetByCodigoInternoAsync(codigoInterno) != null)
             throw new InvalidOperationException("Ya existe un producto con ese código interno.");
-        if (await _unitOfWork.Productos.GetByCodigoBarrasAsync(codigoBarras) != null)
+        if (codigoBarras is not null && await _unitOfWork.Productos.GetByCodigoBarrasAsync(codigoBarras) != null)
             throw new InvalidOperationException("Ya existe un producto con ese código de barras.");
 
         var nuevoProducto = new Producto
@@ -169,21 +166,4 @@ public class ProductoService : IProductoService
         await _unitOfWork.CompleteAsync();
     }
 
-    private static string GenerateEan13()
-    {
-        Span<byte> digits = stackalloc byte[12];
-        RandomNumberGenerator.Fill(digits);
-        var characters = new char[13];
-        var sum = 0;
-
-        for (var index = 0; index < 12; index++)
-        {
-            var digit = digits[index] % 10;
-            characters[index] = (char)('0' + digit);
-            sum += digit * (index % 2 == 0 ? 1 : 3);
-        }
-
-        characters[12] = (char)('0' + ((10 - sum % 10) % 10));
-        return new string(characters);
-    }
 }
