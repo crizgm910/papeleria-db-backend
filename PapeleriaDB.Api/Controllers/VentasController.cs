@@ -33,14 +33,18 @@ public class VentasController : ControllerBase
     public async Task<IActionResult> GetRecent([FromQuery] int limit = 50) => Ok(await _ventaService.GetRecentAsync(limit));
 
     [HttpPost("{id}/devolucion")]
-    public async Task<IActionResult> RegistrarDevolucion(int id, [FromBody] List<DevolucionItemDto> devoluciones)
+    public async Task<IActionResult> RegistrarDevolucion(
+        int id,
+        [FromBody] List<DevolucionItemDto> devoluciones,
+        [FromQuery] int? cajaId = null,
+        [FromQuery] int? usuarioId = null)
     {
         if (devoluciones == null || !devoluciones.Any())
         {
             return BadRequest("Debe especificar al menos un artículo para devolver.");
         }
 
-        var respuesta = await _ventaService.DevolverArticulosAsync(id, devoluciones);
+        var respuesta = await _ventaService.DevolverArticulosAsync(id, devoluciones, cajaId, usuarioId);
         if (!respuesta.Exito)
         {
             return BadRequest(respuesta);

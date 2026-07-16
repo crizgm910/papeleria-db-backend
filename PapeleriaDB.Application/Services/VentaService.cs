@@ -144,7 +144,11 @@ public class VentaService : IVentaService
         }
     }
 
-    public async Task<DevolucionResponseDto> DevolverArticulosAsync(int ventaId, List<DevolucionItemDto> devoluciones)
+    public async Task<DevolucionResponseDto> DevolverArticulosAsync(
+        int ventaId,
+        List<DevolucionItemDto> devoluciones,
+        int? cajaReembolsoId = null,
+        int? usuarioId = null)
     {
         try
         {
@@ -159,10 +163,15 @@ public class VentaService : IVentaService
                 return new DevolucionResponseDto { Exito = false, Mensaje = "La venta ya está cancelada." };
             }
 
-            var caja = await _unitOfWork.Cajas.GetByIdAsync(venta.CajaId);
+            // El efectivo se devuelve desde la caja que está operando en este momento.
+            // Si un cliente antiguo no envía cajaId, se conserva el comportamiento anterior.
+            var cajaId = cajaReembolsoId.GetValueOrDefault() > 0
+                ? cajaReembolsoId!.Value
+                : venta.CajaId;
+            var caja = await _unitOfWork.Cajas.GetByIdAsync(cajaId);
             if (caja == null || !caja.EstaAbierta)
             {
-                return new DevolucionResponseDto { Exito = false, Mensaje = "La caja de la venta está cerrada. Ábrela antes de procesar la devolución." };
+                return new DevolucionResponseDto { Exito = false, Mensaje = "La caja seleccionada está cerrada. Ábrela antes de procesar la devolución." };
             }
 
             decimal totalReembolso = 0;
@@ -216,12 +225,12 @@ public class VentaService : IVentaService
             // Registrar el movimiento de egreso en caja por la devolución
             var movimientoCaja = new MovimientoCaja
             {
-                CajaId = venta.CajaId,
+                CajaId = caja.Id,
                 Tipo = "Egreso",
                 Monto = totalReembolso,
                 Motivo = $"Devolución parcial/total de Venta {venta.Folio}",
                 Fecha = DateTime.Now,
-                UsuarioId = venta.UsuarioId
+                UsuarioId = usuarioId.GetValueOrDefault() > 0 ? usuarioId!.Value : venta.UsuarioId
             };
             
             // Wait, I UnitOfWork doesn't have MovimientosCaja exposed!
